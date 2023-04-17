@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using Mathematics.Matrix;
 
 namespace Mathematics.Vectors;
@@ -12,6 +13,9 @@ public readonly struct Vector3F : IVector3<float> {
 
     public Vector3F(float x, float y, float z) => V = new Vector3(x, y, z);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IVector3<float> Create(float x, float y, float z) => new Vector3F(x, y, z);
+
     public static IVector3<float> Zero { get; } = new Vector3F(Vector3.Zero);
 
     public static IVector3<float> One { get; } = new Vector3F(Vector3.One);
@@ -22,9 +26,9 @@ public readonly struct Vector3F : IVector3<float> {
 
     public static int Dimension => 3;
 
-    public INumber<float> Length() => throw new NotImplementedException();
+    public float Length() => V.Length();
 
-    public INumber<float> LengthSquared() => throw new NotImplementedException();
+    public float LengthSquared() => V.LengthSquared();
 
     public float X {
         get => V.X;
@@ -45,16 +49,27 @@ public readonly struct Vector3F : IVector3<float> {
 
     public bool IsNormalized() => throw new NotImplementedException();
 
-    public IVector3<float> Barycentric(
+    public static IVector3<float> Barycentric(
         IVector3<float> value1,
         IVector3<float> value2,
         IVector3<float> value3,
         float amount1,
         float amount2
-    ) =>
-        new Vector3F(value1.X + amount1 * (value2.X - value1.X) + amount2 * (value3.X - value1.X),
-                     value1.Y + amount1 * (value2.Y - value1.Y) + amount2 * (value3.Y - value1.Y),
-                     value1.Z + amount1 * (value2.Z - value1.Z) + amount2 * (value3.Z - value1.Z));
+    ) {
+        var (x, y, z) = MathUtil.Barycentric(value1, value2, value3, amount1, amount2);
+        return new Vector3F(x, y, z);
+    }
+
+    public static IVector3<float> Hermite(
+        IVector3<float> value1,
+        IVector3<float> tangent1,
+        IVector3<float> value2,
+        IVector3<float> tangent2,
+        float amount
+    ) {
+        var (x, y, z) = MathUtil.Hermite(value1, tangent1, value2, tangent2, amount);
+        return new Vector3F(x, y, z);
+    }
 
     public IVector3<float> Add(IVector3<float> right) {
         if (right is Vector3F vf)
@@ -104,23 +119,11 @@ public readonly struct Vector3F : IVector3<float> {
         IVector3<float> value1,
         IVector3<float> value2,
         IVector3<float> value3,
-        Vector3 value4,
+        IVector3<float> value4,
         float amount
     ) {
-        var squared = amount * amount;
-        var cubed = amount * squared;
-
-        return new Vector3F {
-            X = 0.5f * (2.0f * value2.X + (-value1.X + value3.X) * amount +
-                        (2.0f * value1.X - 5.0f * value2.X + 4.0f * value3.X - value4.X) * squared +
-                        (-value1.X + 3.0f * value2.X - 3.0f * value3.X + value4.X) * cubed),
-            Y = 0.5f * (2.0f * value2.Y + (-value1.Y + value3.Y) * amount +
-                        (2.0f * value1.Y - 5.0f * value2.Y + 4.0f * value3.Y - value4.Y) * squared +
-                        (-value1.Y + 3.0f * value2.Y - 3.0f * value3.Y + value4.Y) * cubed),
-            Z = 0.5f * (2.0f * value2.Z + (-value1.Z + value3.Z) * amount +
-                        (2.0f * value1.Z - 5.0f * value2.Z + 4.0f * value3.Z - value4.Z) * squared +
-                        (-value1.Z + 3.0f * value2.Z - 3.0f * value3.Z + value4.Z) * cubed)
-        };
+        var (x, y, z) = MathUtil.CatmullRom(value1,value2, value3, value4, amount);
+        return new Vector3F(x, y, z);
     }
 
     public float Distance(Vector3F right) => Vector3.Distance(V, right.V);

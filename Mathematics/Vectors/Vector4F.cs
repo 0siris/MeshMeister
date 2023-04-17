@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using Mathematics.Matrix;
 
 namespace Mathematics.Vectors; 
@@ -12,9 +13,12 @@ public readonly struct Vector4F: IVector4<float> {
 
     public static int Dimension => 4;
 
-    public INumber<float> Length() => V.Length();
+    public float Length() => V.Length();
 
-    public INumber<float> LengthSquared() => V.LengthSquared();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IVector4<float> Create(float x, float y, float z, float w) => new Vector4F(new Vector4(x,y,z,w));
+
+    public float LengthSquared() => V.LengthSquared();
 
     public bool IsZero() => throw new NotImplementedException();
 
