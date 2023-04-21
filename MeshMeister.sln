@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeshCore", "MeshCore\MeshCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mathematics", "Mathematics\Mathematics.csproj", "{4C567908-80CB-4DBC-BE4E-8EF740AC3A57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathematicsTests", "MathematicsTests\MathematicsTests.csproj", "{5B74EC2A-BA5F-4A99-95F5-483F7ACDBF42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assertions", "Assertions\Assertions.csproj", "{CA587E9C-A6C2-4D59-BC7C-7263331E62F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{4C567908-80CB-4DBC-BE4E-8EF740AC3A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C567908-80CB-4DBC-BE4E-8EF740AC3A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C567908-80CB-4DBC-BE4E-8EF740AC3A57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B74EC2A-BA5F-4A99-95F5-483F7ACDBF42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B74EC2A-BA5F-4A99-95F5-483F7ACDBF42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B74EC2A-BA5F-4A99-95F5-483F7ACDBF42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B74EC2A-BA5F-4A99-95F5-483F7ACDBF42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA587E9C-A6C2-4D59-BC7C-7263331E62F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA587E9C-A6C2-4D59-BC7C-7263331E62F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA587E9C-A6C2-4D59-BC7C-7263331E62F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA587E9C-A6C2-4D59-BC7C-7263331E62F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

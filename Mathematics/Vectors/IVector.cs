@@ -9,13 +9,14 @@ public interface IVector<T> where T : struct,INumber<T> {
     public T Length();
     public T LengthSquared();
 
-    public bool IsZero();
-    public bool IsNormalized();
+    public bool IsNormalized() => Numerics.IsOne(Length());
 
     public IVector<T> Normalized();
 
     public T Max();
     public T Min();
+
+    public T[] ToArray();
 }
 
 public interface IVector3<T> : IVector<T> where T : struct,INumber<T> {
@@ -40,7 +41,6 @@ public interface IVector3<T> : IVector<T> where T : struct,INumber<T> {
     public T X { get; init; }
     public T Y { get; init; }
     public T Z { get; init; }
-
 
     public abstract static IVector3<T> CatmullRom(
         IVector3<T> value1,
@@ -84,6 +84,13 @@ public interface IVector3<T> : IVector<T> where T : struct,INumber<T> {
                (X * right.Y) - (Y * right.X));
 
     public T Dot(IVector3<T> right) => X * right.X + Y * right.Y + Z * right.Z;
+
+    public IVector3<T> Reflect(IVector3<T> normal) {
+        var dot = X * normal.X + Y * normal.Y + Z * normal.Z;
+        return Create(X - (dot + dot) * normal.X, 
+                      Y - (dot + dot) * normal.Y, 
+                      Z - (dot + dot) * normal.Z);
+    }
 
     public static IVector3<T> operator +(IVector3<T> left, IVector3<T> right) => left.Add(right);
     public static IVector3<T> operator +(IVector3<T> left, T right) => left.Add(right);
@@ -138,6 +145,7 @@ public interface IVector3<T> : IVector<T> where T : struct,INumber<T> {
 
     public static IVector3<T> operator -(IVector3<T> vec) => vec.Negate();
 
+    T[] IVector<T>.ToArray() => new[] {X, Y, Z};
 }
 public interface IVector4<T> : IVector<T> where T : struct, INumber<T> {
     static int IVector<T>.Dimension => 4;
@@ -186,6 +194,7 @@ public interface IVector4<T> : IVector<T> where T : struct, INumber<T> {
     public static IVector<T> operator /(IVector4<T> left, IVector4<T> right) => left.Divide(right);
     public static IVector<T> operator /(IVector4<T> left, T scalar) => left.Divide(scalar);
 
+
     public IVector4<T> Max(IVector4<T> right) =>
         Create(T.Max(X, right.X),
                T.Max(Y, right.Y),
@@ -225,6 +234,8 @@ public interface IVector4<T> : IVector<T> where T : struct, INumber<T> {
     public IVector4<T> Negate() => Create(-X, -Y, -Z, -W);
 
     public static IVector4<T> operator -(IVector4<T> vec) => vec.Negate();
+
+    T[] IVector<T>.ToArray() => new[] {X, Y, Z, W};
 }
 
 

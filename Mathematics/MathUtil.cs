@@ -1,23 +1,19 @@
-﻿using System.Numerics;
-using Mathematics.Vectors;
+﻿using Mathematics.Vectors;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Mathematics;
 
-public static class Constants<T> where T : INumber<T> {
-    public static readonly T Two = T.One + T.One;
-    public static readonly T Three = Two + T.One;
-    public static readonly T Four = Three + T.One;
-    public static readonly T Five = Four + T.One;
-    public static readonly T Half = T.One / Two;
-}
-
 public static class MathUtil {
-    public static T Lerp<T>(T from, T to, T amount) where T : struct, INumber<T> 
-        => (T.One - amount) * from + amount * to;
+    public static double Cot(double alpha) => 1.0 / Math.Tan(alpha);
+    public static double Atanh(double x) => (Math.Log(1 + x) - Math.Log(1 - x)) / 2.0;
+
+    public static T Lerp<T>(T from, T to, T amount) where T : struct, INumber<T> =>
+        (T.One - amount) * from + amount * to;
 
     public static T SmoothStep<T>(T amount) where T : struct, INumber<T> {
-        var two = Constants<T>.Two;
-        var three = Constants<T>.Three;
+        var two = Constants<T>.T2;
+        var three = Constants<T>.T3;
         return (amount <= T.Zero) ? T.Zero
                : (amount >= T.One) ? T.One
                : amount * amount * (three - (two * amount));
@@ -31,8 +27,8 @@ public static class MathUtil {
         IVector3<T> tangent2,
         T amount
     ) where T : struct, INumber<T> {
-        var two = Constants<T>.Two;
-        var three = Constants<T>.Three;
+        var two = Constants<T>.T2;
+        var three = Constants<T>.T3;
 
         var squared = amount * amount;
         var cubed = amount * squared;
@@ -70,11 +66,11 @@ public static class MathUtil {
         var cubed = amount * squared;
 
         var half = Constants<T>.Half;
-        var two = Constants<T>.Two;
-        var four = Constants<T>.Four;
-        var three = Constants<T>.Three;
+        var two = Constants<T>.T2;
+        var four = Constants<T>.T4;
+        var three = Constants<T>.T3;
 
-        var five = Constants<T>.Five;
+        var five = Constants<T>.T5;
         var x = half * (two * value2.X + (-value1.X + value3.X) * amount +
                         (two * value1.X - five * value2.X + four * value3.X - value4.X) * squared +
                         (-value1.X + three * value2.X - three * value3.X + value4.X) * cubed);
@@ -86,4 +82,8 @@ public static class MathUtil {
                         (-value1.Z + three * value2.Z - three * value3.Z + value4.Z) * cubed);
         return (x, y, z);
     }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Swap<T>(ref T v1, ref T v2) => (v1, v2) = (v2, v1);
 }

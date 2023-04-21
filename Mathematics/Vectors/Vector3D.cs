@@ -1,19 +1,12 @@
-﻿using System.Numerics;
-
-namespace Mathematics.Vectors; 
+﻿namespace Mathematics.Vectors; 
 
 public struct Vector3D: IVector3<double> {
-    public double Length() => throw new NotImplementedException();
+    public double Length() => Math.Sqrt(((IVector3<double>) this).LengthSquared());
 
-    public bool IsZero() => throw new NotImplementedException();
-
-    public bool IsNormalized() => throw new NotImplementedException();
-
-    public IVector3<double> Create(double x, double y, double z) => throw new NotImplementedException();
-
+    public IVector3<double> Create(double x, double y, double z) => new Vector3D(x,y,z);
     public Vector3D(double x, double y, double z) {
         X = x;
-        y = y;
+        Y = y;
         Z = Z;
     }
 

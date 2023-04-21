@@ -5,6 +5,9 @@ using Mathematics.Matrix;
 namespace Mathematics.Vectors;
 
 public readonly struct Vector3F : IVector3<float> {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IVector3<float> From(float x, float y, float z) => new Vector3F(x, y, z);
+
     public readonly Vector3 V;
 
     private Vector3F(Vector3 v) => V = v;
@@ -44,8 +47,6 @@ public readonly struct Vector3F : IVector3<float> {
         get => V.Z;
         init => V.Z = value;
     }
-
-    public bool IsZero() => throw new NotImplementedException();
 
     public bool IsNormalized() => throw new NotImplementedException();
 
