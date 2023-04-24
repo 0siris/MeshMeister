@@ -1,20 +1,23 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Mathematics;
 
 public static class Constants<T> where T : struct, INumber<T> {
-    public static readonly T T2 = Build(2);
-    public static readonly T T3 = Build(3);
-    public static readonly T T4 = Build(4);
-    public static readonly T T5 = Build(5);
-    public static readonly T Half = Build(0.5);
+    public static readonly T T2 = Convert(2);
+    public static readonly T T3 = Convert(3);
+    public static readonly T T4 = Convert(4);
+    public static readonly T T5 = Convert(5);
+    public static readonly T T10 = Convert(10);
+    public static readonly T Half = Convert(0.5);
 
-    public static readonly T T180 = Build(180);
-    public static readonly T T360 = Build(360);
+    public static readonly T T180 = Convert(180);
+    public static readonly T T360 = Convert(360);
 
-    public static readonly T Pi = Build(Math.PI);
+    public static readonly T Pi = Convert(Math.PI);
     public static readonly T TwoPi = T2 * Pi;
-
-
-    private static T Build(dynamic value) => (T) value;
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static T Convert<TOther>(TOther value) where TOther : INumberBase<TOther> 
+        => T.CreateTruncating(value);
 }

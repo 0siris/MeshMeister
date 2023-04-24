@@ -1,31 +1,30 @@
 ﻿using System.Numerics;
-using System.Runtime.CompilerServices;
 using Mathematics.Matrix;
 
 namespace Mathematics.Vectors;
 
-public readonly struct Vector3F : IVector3<float> {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IVector3<float> From(float x, float y, float z) => new Vector3F(x, y, z);
-
-    public readonly Vector3 V;
+public struct Vector3F : IVector3<float,Vector3F> {
+    public Vector3 V;
 
     private Vector3F(Vector3 v) => V = v;
 
-    private Vector3F(IVector3<float> c) => V = new Vector3(c.X, c.Y, c.Z);
+    private Vector3F(IVector3Values<float> c) => V = new Vector3(c.X, c.Y, c.Z);
 
     public Vector3F(float x, float y, float z) => V = new Vector3(x, y, z);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IVector3<float> Create(float x, float y, float z) => new Vector3F(x, y, z);
 
-    public static IVector3<float> Zero { get; } = new Vector3F(Vector3.Zero);
+    public Vector3F TransformCoordinate(IMatrix4x4<float> transform) => throw new NotImplementedException();
 
-    public static IVector3<float> One { get; } = new Vector3F(Vector3.One);
+    public static Vector3F Zero { get; } = new(Vector3.Zero);
 
-    public static IVector3<float> UnitX { get; } = new Vector3F(Vector3.UnitX);
-    public static IVector3<float> UnitY { get; } = new Vector3F(Vector3.UnitY);
-    public static IVector3<float> UnitZ { get; } = new Vector3F(Vector3.UnitZ);
+    public static Vector3F One { get; } = new(Vector3.One);
+
+    public static Vector3F UnitX { get; } = new(Vector3.UnitX);
+    public static Vector3F UnitY { get; } = new(Vector3.UnitY);
+    public static Vector3F UnitZ { get; } = new(Vector3.UnitZ);
+
+    Vector3F IVector3<float,Vector3F>.Normalized() => new (Vector3.Normalize(V));
+    
 
     public static int Dimension => 3;
 
@@ -35,25 +34,25 @@ public readonly struct Vector3F : IVector3<float> {
 
     public float X {
         get => V.X;
-        init => V.X = value;
+        set => V.X = value;
     }
 
     public float Y {
         get => V.Y;
-        init => V.Y = value;
+        set => V.Y = value;
     }
 
     public float Z {
         get => V.Z;
-        init => V.Z = value;
+        set => V.Z = value;
     }
 
     public bool IsNormalized() => throw new NotImplementedException();
 
-    public static IVector3<float> Barycentric(
-        IVector3<float> value1,
-        IVector3<float> value2,
-        IVector3<float> value3,
+    public static Vector3F Barycentric(
+        IVector3<float, Vector3F> value1,
+        IVector3<float, Vector3F> value2,
+        IVector3<float, Vector3F> value3,
         float amount1,
         float amount2
     ) {
@@ -61,66 +60,68 @@ public readonly struct Vector3F : IVector3<float> {
         return new Vector3F(x, y, z);
     }
 
-    public static IVector3<float> Hermite(
-        IVector3<float> value1,
-        IVector3<float> tangent1,
-        IVector3<float> value2,
-        IVector3<float> tangent2,
+    public static Vector3F Hermite(
+        IVector3<float, Vector3F> value1,
+        IVector3<float, Vector3F> tangent1,
+        IVector3<float, Vector3F> value2,
+        IVector3<float, Vector3F> tangent2,
         float amount
     ) {
         var (x, y, z) = MathUtil.Hermite(value1, tangent1, value2, tangent2, amount);
         return new Vector3F(x, y, z);
     }
 
-    public IVector3<float> Add(IVector3<float> right) {
+    public Vector3F Add(IVector3<float, Vector3F> right) {
         if (right is Vector3F vf)
             return new Vector3F(Vector3.Add(V, vf.V));
         return new Vector3F(Vector3.Add(V, new Vector3F(right).V));
     }
 
-    public IVector3<float> Add(float scalar) => new Vector3F(Vector3.Add(V, new Vector3(scalar)));
+    public Vector3F Add(float scalar) => new Vector3F(Vector3.Add(V, new Vector3(scalar)));
 
-    public IVector3<float> Subtract(IVector3<float> right) => new Vector3F(Vector3.Subtract(V, right.ToVector3F().V));
+    public Vector3F Subtract(IVector3<float, Vector3F> right) => new(Vector3.Subtract(V, right.Unbox().V));
 
-    public IVector3<float> Subtract(float scalar) => new Vector3F(Vector3.Subtract(V, new Vector3(scalar)));
+    public Vector3F Subtract(float scalar) => new(Vector3.Subtract(V, new Vector3(scalar)));
 
-    public IVector3<float> Multiply(IVector3<float> right) => new Vector3F(Vector3.Multiply(V, right.ToVector3F().V));
+    public Vector3F Multiply(IVector3<float,Vector3F> right) => new Vector3F(Vector3.Multiply(V, right.Unbox().V));
 
-    public IVector3<float> Multiply(float scalar) => new Vector3F(Vector3.Multiply(V, new Vector3(scalar)));
+    public Vector3F Multiply(float scalar) => new Vector3F(Vector3.Multiply(V, new Vector3(scalar)));
 
-    public IVector3<float> Divide(IVector3<float> right) => new Vector3F(Vector3.Divide(V, right.ToVector3F().V));
+    public Vector3F Divide(IVector3<float, Vector3F> right) => new Vector3F(Vector3.Divide(V, right.Unbox().V));
 
-    public IVector3<float> Divide(float scalar) => new Vector3F(Vector3.Divide(V, new Vector3(scalar)));
+    public Vector3F Divide(float scalar) => new Vector3F(Vector3.Divide(V, new Vector3(scalar)));
 
-    public IVector3<float> Cross(IVector3<float> right) => new Vector3F(Vector3.Cross(V, right.ToVector3F().V));
+    public Vector3F Cross(IVector3<float, Vector3F> right) => new Vector3F(Vector3.Cross(V, right.Unbox().V));
 
-    public float Dot(IVector3<float> right) => Vector3.Dot(V, right.ToVector3F().V);
+    public static Vector3F operator -(Vector3F v) => new(-v.X, -v.Y, -v.Z);
 
-    public IVector<float> Normalized() => new Vector3F(Vector3.Normalize(V));
+    public float Dot(IVector3<float, Vector3F> right) => Vector3.Dot(V, right.Unbox().V);
+
+    public Vector3F Normalized() => new Vector3F(Vector3.Normalize(V));
     public float Max() => MathF.Max(X, MathF.Max(X, Y));
     public float Min() => MathF.Min(X, MathF.Min(X, Y));
 
-    public IVector3<float> Max(IVector3<float> right) => new Vector3F(Vector3.Max(V, right.ToVector3F().V));
+    public Vector3F Max(IVector3<float, Vector3F> right) => new Vector3F(Vector3.Max(V, right.Unbox().V));
 
-    public IVector3<float> Min(IVector3<float> right) => new Vector3F(Vector3.Min(V, right.ToVector3F().V));
+    public Vector3F Min(IVector3<float, Vector3F> right) => new Vector3F(Vector3.Min(V, right.Unbox().V));
 
-    public IVector3<float> Abs() => new Vector3F(Vector3.Abs(V));
+    public Vector3F Abs() => new Vector3F(Vector3.Abs(V));
 
-    public IVector3<float> Clamp(IVector3<float> min, IVector3<float> max) =>
-        new Vector3F(Vector3.Clamp(V, min.ToVector3F().V, max.ToVector3F().V));
+    public Vector3F Clamp(IVector3<float, Vector3F> min, IVector3<float, Vector3F> max) =>
+        new(Vector3.Clamp(V, min.Unbox().V, max.Unbox().V));
 
-    public IVector3<float> Lerp(IVector3<float> max, float amount) =>
-        new Vector3F(Vector3.Lerp(V, max.ToVector3F().V, amount));
+    public Vector3F Lerp(IVector3<float, Vector3F> max, float amount) =>
+        new(Vector3.Lerp(V, max.Unbox().V, amount));
 
-    public float Distance(IVector3<float> right) => Vector3.Distance(V, right.ToVector3F().V);
+    public float Distance(IVector3<float, Vector3F> right) => Vector3.Distance(V, right.Unbox().V);
 
-    public float DistanceSquared(IVector3<float> right) => Vector3.DistanceSquared(V, right.ToVector3F().V);
+    public float DistanceSquared(IVector3<float, Vector3F> right) => Vector3.DistanceSquared(V, right.Unbox().V);
 
-    public static IVector3<float> CatmullRom(
-        IVector3<float> value1,
-        IVector3<float> value2,
-        IVector3<float> value3,
-        IVector3<float> value4,
+    public static Vector3F CatmullRom(
+        IVector3<float, Vector3F> value1,
+        IVector3<float, Vector3F> value2,
+        IVector3<float, Vector3F> value3,
+        IVector3<float, Vector3F> value4,
         float amount
     ) {
         var (x, y, z) = MathUtil.CatmullRom(value1,value2, value3, value4, amount);
@@ -130,18 +131,33 @@ public readonly struct Vector3F : IVector3<float> {
     public float Distance(Vector3F right) => Vector3.Distance(V, right.V);
     public float DistanceSquared(Vector3F right) => Vector3.DistanceSquared(V, right.V);
 
-    public IVector3<float> Transform(IMatrix4x4<float> matrix) {
+    public Vector3F Transform(IMatrix4x4<float> matrix) {
         if (matrix is not Matrix4x4F m) m = new Matrix4x4F(matrix);
         return new Vector3F(Vector3.Transform(V, m.Matrix));
     }
 
-    public IVector3<float> TransformNormal(IMatrix4x4<float> matrix) {
+
+    public Vector3F TransformNormal(IMatrix4x4<float> matrix) {
         if (matrix is not Matrix4x4F m) m = new Matrix4x4F(matrix);
         return new Vector3F(Vector3.TransformNormal(V, m.Matrix));
     }
 
-    public IVector3<float> Negate() => new Vector3F(Vector3.Negate(V));
+    public Vector3F Negate() => new(Vector3.Negate(V));
+
+    public Vector3F Unbox() => this;
 
     public static implicit operator Vector3(Vector3F v) => v.V;
     public static implicit operator Vector3F(Vector3 v) => new(v);
+
+    public static Vector3F Build(float x, float y, float z) 
+        => new(x, y, z);
+
+    public void Normalize() {
+        var l = Length();
+        X /= l;
+        Y /= l;
+        Z /= l;
+    }
+
+
 }

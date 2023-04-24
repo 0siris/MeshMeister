@@ -35,4 +35,5 @@ public struct Matrix4x4F: IMatrix4x4<float> {
     public float M42 { get; }
     public float M43 { get; }
     public float M44 { get; }
+    public IMatrix4x4<float> AsFloat() => throw new NotImplementedException();
 }

@@ -9,7 +9,12 @@
   <ItemGroup>
     <Folder Include="ComputationalGeometry\" />
     <Folder Include="Assertions\" />
+    <Folder Include="Files\" />
     <Folder Include="Structures\Mesh\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mathematics\Mathematics.csproj" />
   </ItemGroup>
 
 </Project>

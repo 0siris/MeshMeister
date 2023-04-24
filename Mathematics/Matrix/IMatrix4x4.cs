@@ -151,6 +151,7 @@ public interface IMatrix4x4<T> where T : struct, INumber<T> {
                       m41, m42, m43, m44);
     }
 
+    IMatrix4x4<float> AsFloat();
 }
 
 public static class MatrixExtensions {

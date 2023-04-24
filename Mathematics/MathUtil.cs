@@ -20,13 +20,13 @@ public static class MathUtil {
     }
 
 
-    public static (T X, T Y, T Z) Hermite<T>(
-        IVector3<T> value1,
-        IVector3<T> tangent1,
-        IVector3<T> value2,
-        IVector3<T> tangent2,
+    public static (T X, T Y, T Z) Hermite<T,R>(
+        IVector3<T,R> value1,
+        IVector3<T,R> tangent1,
+        IVector3<T,R> value2,
+        IVector3<T,R> tangent2,
         T amount
-    ) where T : struct, INumber<T> {
+    ) where T : struct, INumber<T> where R : IVector3<T, R> {
         var two = Constants<T>.T2;
         var three = Constants<T>.T3;
 
@@ -44,24 +44,24 @@ public static class MathUtil {
         return (x, y, z);
     }
 
-    public static (T X, T Y, T Z) Barycentric<T>(
-        IVector3<T> value1,
-        IVector3<T> value2,
-        IVector3<T> value3,
+    public static (T X, T Y, T Z) Barycentric<T,R>(
+        IVector3<T,R> value1,
+        IVector3<T,R> value2,
+        IVector3<T,R> value3,
         T amount1,
         T amount2
-    ) where T : struct, INumber<T> =>
+    ) where T : struct, INumber<T> where R : IVector3<T, R> =>
         (value1.X + amount1 * (value2.X - value1.X) + amount2 * (value3.X - value1.X),
          value1.Y + amount1 * (value2.Y - value1.Y) + amount2 * (value3.Y - value1.Y),
          value1.Z + amount1 * (value2.Z - value1.Z) + amount2 * (value3.Z - value1.Z));
 
-    public static (T X, T Y, T Z) CatmullRom<T>(
-        IVector3<T> value1,
-        IVector3<T> value2,
-        IVector3<T> value3,
-        IVector3<T> value4,
+    public static (T X, T Y, T Z) CatmullRom<T,R>(
+        IVector3<T,R> value1,
+        IVector3<T,R> value2,
+        IVector3<T,R> value3,
+        IVector3<T,R> value4,
         T amount
-    ) where T : struct, INumber<T> {
+    ) where T : struct, INumber<T> where R : IVector3<T, R> {
         var squared = amount * amount;
         var cubed = amount * squared;
 
@@ -86,4 +86,17 @@ public static class MathUtil {
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Swap<T>(ref T v1, ref T v2) => (v1, v2) = (v2, v1);
+
+
+    public static Vector3 Centroid(IEnumerable<Vector3F> positions) {
+        var center = Vector3.Zero;
+        var count = 0;
+        foreach (var position in positions) {
+            center += position;
+            count++;
+        }
+
+        center /= count;
+        return center;
+    }
 }

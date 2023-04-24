@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Xml.XPath;
 
 namespace Mathematics; 
 
@@ -94,6 +95,25 @@ public static class Numerics {
         const int maxUlp = 4;
         return ulp <= maxUlp;
     }
+
+    public static T Pow10<T>(int exp) where T : struct, INumber<T> {
+        switch (exp) {
+            case >= 0: {
+                var product = T.One;
+                for (var i = 0; i < exp; i++) 
+                    product *= Constants<T>.T10;
+                return product;
+            }
+            case < 0: {
+                var product = T.One;
+                for (var i = 0; exp < i; i--) 
+                    product /= Constants<T>.T10;
+                return product;
+            }
+        }
+    }
+
+    
 }
 
 [StructLayout(LayoutKind.Explicit)]
