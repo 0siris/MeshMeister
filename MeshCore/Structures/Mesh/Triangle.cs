@@ -30,4 +30,10 @@ public class Triangle<NumberType, VectorType> where NumberType : struct, INumber
     public NumberType Area() => E0.Vector.Cross(E1.Vector).LengthSquared() * NumberType.CreateTruncating(0.5);
 
     public VectorType MassCenter() => (V0Pos + V1Pos + V2Pos) / NumberType.CreateTruncating(3);
+
+    public ISet<Triangle<NumberType, VectorType>> Neighborhood() =>
+        Vertices.SelectMany(v => v.OutEdges)
+                .Select(e => e.Triangle)
+                .ToHashSet();
+
 }

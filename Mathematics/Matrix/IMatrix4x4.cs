@@ -1,44 +1,68 @@
 ﻿using System.Numerics;
+using Mathematics.Quaternion;
+using Mathematics.Vectors;
 
-namespace Mathematics.Matrix; 
+namespace Mathematics.Matrix;
+
+public interface IMatrix4X4Values<T> where T : INumber<T> {
+    public T M11 { get; set; }
+    public T M12 { get; set;}
+    public T M13 { get; set;}
+    public T M14 { get; set;}
+    //row 2
+    public T M21 { get; set;}
+    public T M22 { get; set;}
+    public T M23 { get; set;}
+    public T M24 { get; set;}
+    //row 3
+    public T M31 { get; set;}
+    public T M32 { get; set;}
+    public T M33 { get; set;}
+    public T M34 { get;set; }
+    //row 4
+    public T M41 { get; set;}
+    public T M42 { get; set;}
+    public T M43 { get; set;}
+    public T M44 { get; set;}
+
+    public bool IsIdentity { get; }
+}
 
 /// <summary>
 /// Row major matrix representation
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IMatrix4x4<T> where T : struct, INumber<T> {
+/// <typeparam name="MatrixType">The final type of the matrix struct</typeparam>
+/// <typeparam name="VectorType">Vector type of the matrix</typeparam>
+public interface IMatrix4X4<T, MatrixType, VectorType> : IMatrix4X4Values<T>
+    where T : struct, INumber<T>
+    where VectorType : struct, IVector4<T, VectorType>
+    where MatrixType : struct, IMatrix4X4<T, MatrixType, VectorType> {
 
-    public static IMatrix4x4<T> Identity { get; }
+    public abstract static MatrixType Identity { get; }
+    public abstract static MatrixType Zero { get; }
 
-    public IMatrix4x4<T> Create(
-        T m11, T m12, T m13, T m14,
+    public static MatrixType ConvertFrom<NumType, TOtherMatrix, TOtherVector>(IMatrix4X4<NumType, TOtherMatrix,TOtherVector> m)
+        where NumType : struct, INumber<NumType> 
+        where TOtherMatrix : struct, IMatrix4X4<NumType, TOtherMatrix,TOtherVector> 
+        where TOtherVector : struct, IVector4<NumType, TOtherVector> =>
+
+        MatrixType.Create(T.CreateTruncating(m.M11), T.CreateTruncating(m.M12), T.CreateTruncating(m.M13), T.CreateTruncating(m.M14),
+                          T.CreateTruncating(m.M11), T.CreateTruncating(m.M12), T.CreateTruncating(m.M13), T.CreateTruncating(m.M14),
+                          T.CreateTruncating(m.M11), T.CreateTruncating(m.M12), T.CreateTruncating(m.M13), T.CreateTruncating(m.M14),
+                          T.CreateTruncating(m.M11), T.CreateTruncating(m.M12), T.CreateTruncating(m.M13), T.CreateTruncating(m.M14));
+
+    public abstract static MatrixType Rotation<QuaternionType>(QuaternionType q)
+        where QuaternionType : struct, IQuaternion<T, QuaternionType>;
+
+    public abstract static MatrixType Translation(VectorType v);
+
+    public abstract static MatrixType Create(
+        T m11, T m12, T m13, T m14, 
         T m21, T m22, T m23, T m24,
         T m31, T m32, T m33, T m34,
-        T m41, T m42, T m43, T m44
-        );
+        T m41, T m42, T m43, T m44);
 
-    public IMatrix4x4<T> Create(T value);
-
-    //row 1
-    public T M11 { get; }
-    public T M12 { get; }
-    public T M13 { get; }
-    public T M14 { get; }
-    //row 2
-    public T M21 { get; }
-    public T M22 { get; }
-    public T M23 { get; }
-    public T M24 { get; }
-    //row 3
-    public T M31 { get; }
-    public T M32 { get; }
-    public T M33 { get; }
-    public T M34 { get; }
-    //row 4
-    public T M41 { get; }
-    public T M42 { get; }
-    public T M43 { get; }
-    public T M44 { get; }
 
     public T Determinant() {
         var t1 = M33 * M44 - M34 * M43;
@@ -54,7 +78,7 @@ public interface IMatrix4x4<T> where T : struct, INumber<T> {
                M14 * (M21 * t3 - M22 * t5 + M23 * t6);
     }
 
-    public IMatrix4x4<T> Invert() {
+    public MatrixType Invert() {
         var b0 = M31 * M42 - M32 * M41;
         var b1 = M31 * M43 - M33 * M41;
         var b2 = M34 * M41 - M31 * M44;
@@ -70,7 +94,7 @@ public interface IMatrix4x4<T> where T : struct, INumber<T> {
         var det = M11 * d11 - M12 * d12 + M13 * d13 - M14 * d14;
         
         if (T.Abs(det) == T.Zero) {
-            return Create(T.Zero);
+            return MatrixType.Zero;
         }
 
         det = T.One / det;
@@ -114,19 +138,19 @@ public interface IMatrix4x4<T> where T : struct, INumber<T> {
         var m43 = -d34 * det;
         var m44 = +d44 * det;
 
-        return Create(m11, m12, m13, m14,
-                      m21, m22, m23, m24,
-                      m31, m32, m33, m34,
-                      m41, m42, m43, m44);
+        return MatrixType.Create(m11, m12, m13, m14,
+                                 m21, m22, m23, m24,
+                                 m31, m32, m33, m34,
+                                 m41, m42, m43, m44);
     }
 
-    public IMatrix4x4<T> Transpose() =>
-        Create(M11, M21, M31, M41,
+    public MatrixType Transpose() =>
+        MatrixType.Create(M11, M21, M31, M41,
                M12, M22, M23, M24,
                M31, M32, M33, M34,
                M41, M42, M43, M44);
 
-    public IMatrix4x4<T> Multiply(IMatrix4x4<T> right) {
+    public MatrixType Multiply(MatrixType right) {
         
         var m11 = M11 * right.M11 + M12 * right.M21 + M13 * right.M31 + M14 * right.M41;
         var m12 = M11 * right.M12 + M12 * right.M22 + M13 * right.M32 + M14 * right.M42;
@@ -145,19 +169,15 @@ public interface IMatrix4x4<T> where T : struct, INumber<T> {
         var m43 = M41 * right.M13 + M42 * right.M23 + M43 * right.M33 + M44 * right.M43;
         var m44 = M41 * right.M14 + M42 * right.M24 + M43 * right.M34 + M44 * right.M44;
         
-        return Create(m11, m12, m13, m14,
-                      m21, m22, m23, m24,
-                      m31, m32, m33, m34,
-                      m41, m42, m43, m44);
+        return MatrixType.Create(m11, m12, m13, m14,
+                                 m21, m22, m23, m24,
+                                 m31, m32, m33, m34,
+                                 m41, m42, m43, m44);
     }
 
-    IMatrix4x4<float> AsFloat();
-}
 
-public static class MatrixExtensions {
-    public static Matrix4x4F ToMatrix4x4F(this IMatrix4x4<float> matrix) {
-        if (matrix is not Matrix4x4F m)
-            m = new Matrix4x4F(matrix);
-        return m;
-    }
+    public abstract static MatrixType operator *(
+        MatrixType left,
+        MatrixType right
+    );
 }

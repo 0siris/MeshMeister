@@ -4,7 +4,8 @@ using Mathematics.Vectors;
 namespace Mathematics.Quaternion;
 
 public struct QuaternionF : IQuaternion<float, QuaternionF> {
-    private System.Numerics.Quaternion quaternion;
+    private NumQuaternion quaternion;
+
 
     public float X {
         get => quaternion.X;
@@ -73,4 +74,6 @@ public struct QuaternionF : IQuaternion<float, QuaternionF> {
     public static QuaternionF UnitZ => Build(0, 0, 1, 0);
     public static QuaternionF UnitW => Build(0, 0, 0, 1);
     public float Distance(QuaternionF right) => throw new NotImplementedException();
+
+    public static implicit operator NumQuaternion(QuaternionF qf) => qf.quaternion;
 }

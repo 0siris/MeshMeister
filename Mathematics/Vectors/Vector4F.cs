@@ -6,22 +6,15 @@ namespace Mathematics.Vectors;
 
 public struct Vector4F : IVector4<float, Vector4F> {
     public Vector4 V;
+    private IVector4<float, Vector4F> vector4Implementation;
 
-    private Vector4F(Vector4 v) {
-        V = v;
-    }
+    private Vector4F(Vector4 v) => V = v;
 
-    public Vector4F(IVector4<float, Vector4F> v) {
-        V = new Vector4(v.X, v.Y, v.Z, v.W);
-    }
+    public Vector4F(IVector4<float, Vector4F> v) => V = new Vector4(v.X, v.Y, v.Z, v.W);
 
-    public Vector4F(IVector4Values<float> v) {
-        V = new Vector4(v.X, v.Y, v.Z, v.W);
-    }
+    public Vector4F(IVector4Values<float> v) => V = new Vector4(v.X, v.Y, v.Z, v.W);
 
-    private Vector4F(float x, float y, float z, float w) {
-        V = new Vector4(x, y, z, w);
-    }
+    private Vector4F(float x, float y, float z, float w) => V = new Vector4(x, y, z, w);
 
     public static Vector4F Build(float x, float y, float z, float w) => new(x, y, z, w);
 
@@ -110,7 +103,11 @@ public struct Vector4F : IVector4<float, Vector4F> {
 
     public Vector4F Abs() => new(Vector4.Abs(V));
 
-    public Vector4F Transform(IMatrix4x4<float> matrix) => new(Vector4.Transform(V, matrix.ToMatrix4x4F().Matrix));
+    public Vector4F Transform<MatrixType>(MatrixType matrix)
+        where MatrixType : struct, IMatrix4X4<float, MatrixType, Vector4F> 
+        => new(Vector4.Transform(V, matrix.ToMatrix4X4F().Matrix));
 
     public Vector4F Negate() => new(Vector4.Negate(V));
+    public Vector3Type ToXyz<Vector3Type>() where Vector3Type : IVector3<float, Vector3Type> 
+        => Vector3Type.Build(X, Y, Z);
 }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Mathematics;
 using Mathematics.Matrix;
 using Mathematics.Quaternion;
 using MeshCore.Structures.Mesh;
@@ -147,7 +148,7 @@ public class StlParser{
         vector.X = BitConverter.ToSingle(buffer, pos);
         vector.Y = BitConverter.ToSingle(buffer, pos + 4);
         vector.Z = BitConverter.ToSingle(buffer, pos + 8);
-        vector = vector.TransformCoordinate(transform.ToMatrix4X4().AsFloat());
+        vector = vector.TransformCoordinate(transform.ToSrtMatrix().AsFloat());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -155,7 +156,7 @@ public class StlParser{
         normal.X = BitConverter.ToSingle(buffer, pos);
         normal.Y = BitConverter.ToSingle(buffer, pos + 4);
         normal.Z = BitConverter.ToSingle(buffer, pos + 8);
-        normal = normal.TransformNormal(transform.ToMatrix4X4().AsFloat());
+        normal = normal.TransformNormal(transform.ToSrtMatrix().AsFloat());
         normal.Normalize();
 
         if (invertNormals)
@@ -195,7 +196,7 @@ public class StlParser{
                             Y = float.Parse(normalString[2], CultureInfo.InvariantCulture),
                             Z = float.Parse(normalString[3], CultureInfo.InvariantCulture)
                         };
-                        normal = normal.TransformNormal(transform.ToMatrix4X4().AsFloat());
+                        normal = normal.TransformNormal(transform.ToSrtMatrix().AsFloat());
                         normal.Normalize();
                     }
 
@@ -210,7 +211,7 @@ public class StlParser{
                         Y = float.Parse(vertexString[1], CultureInfo.InvariantCulture),
                         Z = float.Parse(vertexString[2], CultureInfo.InvariantCulture)
                     };
-                    vector.TransformCoordinate(transform.ToMatrix4X4().AsFloat());
+                    vector.TransformCoordinate(transform.ToSrtMatrix().AsFloat());
                     vertices.Add(vector);
                     break;
 
@@ -405,9 +406,7 @@ public class StlParser{
         return this;
     }
 
-    public TriangleMesh<NumberType, VectorType> GetMesh<NumberType, VectorType>()
-        where VectorType : struct, IVector3<NumberType, VectorType> 
-        where NumberType : struct, INumber<NumberType> {
+    public TriangleMesh GetMesh() {
 
         if (!IsSuccessfullyParsed && parsingAttempts == 0)
             ParseModel();
@@ -417,12 +416,14 @@ public class StlParser{
         }
 
 
-        var triangleMesh = new TriangleMesh<NumberType, VectorType>{};
-        triangleMesh.SetTriangles(Triangles);
+        //var triangleMesh = new TriangleMesh<NumberType, VectorType>{};
+        //triangleMesh.SetTriangles(Triangles);
         
-        if(UpdateMeshAsync)
-            triangleMesh.UpdateAsync();
+        //if(UpdateMeshAsync)
+        //    triangleMesh.UpdateAsync();
 
+        //return triangleMesh;
+        var triangleMesh = new TriangleMesh();
         return triangleMesh;
     }
 

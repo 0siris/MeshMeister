@@ -88,15 +88,18 @@ public static class MathUtil {
     public static void Swap<T>(ref T v1, ref T v2) => (v1, v2) = (v2, v1);
 
 
-    public static Vector3 Centroid(IEnumerable<Vector3F> positions) {
-        var center = Vector3.Zero;
+    public static Vector3 Centroid(this IEnumerable<Vector3F> positions) => Centroid<float, Vector3F>(positions);
+    public static Vector3D Centroid(this IEnumerable<Vector3D> positions) => Centroid<double, Vector3D>(positions);
+
+    public static VectorType Centroid<NumType, VectorType>(IEnumerable<VectorType> positions)  where VectorType: struct, IVector3<NumType, VectorType> where NumType : struct, INumber<NumType> {
+        var center = VectorType.Zero;
         var count = 0;
         foreach (var position in positions) {
             center += position;
             count++;
         }
 
-        center /= count;
+        center /= NumType.CreateTruncating(count);
         return center;
     }
 }

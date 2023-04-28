@@ -5,8 +5,9 @@ using MeshCore.Structures.Mesh;
 namespace MeshCore; 
 
 public static class Helper {
-    public static VectorType
-        Centroid<NumberType, VectorType>(this IEnumerable<Vertex<NumberType, VectorType>> vertices)
+
+  
+    public static VectorType Centroid<NumberType, VectorType>(this IEnumerable<Vertex<NumberType, VectorType>> vertices)
         where NumberType : struct, INumber<NumberType> where VectorType : struct, IVector3<NumberType, VectorType> {
         var positions = vertices.Select(v => v.Position);
 

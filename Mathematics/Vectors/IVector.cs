@@ -132,12 +132,12 @@ public interface IVector3<NumberType, VecType> : IVector3Values<NumberType>, IVe
     public NumberType DistanceSquared(IVector3<NumberType, VecType> right) => Subtract(right).LengthSquared();
     public VecType Abs() => VecType.Build(NumberType.Abs(X), NumberType.Abs(Y), NumberType.Abs(Z));
 
-    public VecType Transform(IMatrix4x4<NumberType> transform) =>
+    public VecType Transform(IMatrix4X4Values<NumberType> transform) =>
         VecType.Build(X * transform.M11 + Y * transform.M21 + Z * transform.M31 + transform.M41,
                 X * transform.M12 + Y * transform.M22 + Z * transform.M32 + transform.M42,
                 X * transform.M13 + Y * transform.M23 + Z * transform.M33 + transform.M43);
 
-    public  VecType TransformCoordinate(IMatrix4x4<NumberType> transform) {
+    public  VecType TransformCoordinate(IMatrix4X4Values<NumberType> transform) {
         var x = X * transform.M11 + Y * transform.M21 + Z * transform.M31 + transform.M41;
         var y = X * transform.M12 + Y * transform.M22 + Z * transform.M32 + transform.M42;
         var z = X * transform.M13 + Y * transform.M23 + Z * transform.M33 + transform.M43;
@@ -145,7 +145,7 @@ public interface IVector3<NumberType, VecType> : IVector3Values<NumberType>, IVe
         return VecType.Build(x * w, y * w, z * w);
     }
 
-    public IVector3<NumberType, VecType> TransformNormal(IMatrix4x4<NumberType> transform) =>
+    public IVector3<NumberType, VecType> TransformNormal(IMatrix4X4Values<NumberType> transform) =>
         VecType.Build(X * transform.M11 + Y * transform.M21 + Z * transform.M31,
                 X * transform.M12 + Y * transform.M22 + Z * transform.M32,
                 X * transform.M13 + Y * transform.M23 + Z * transform.M33);
@@ -172,17 +172,17 @@ public interface IVector4Values<T> where T : struct, INumber<T> {
     public T W { get; set; }
 }
 
-public interface IVector4<T,VecType> :IVector4Values<T>, IVector<T, VecType> where T : struct, INumber<T> where VecType: IVector4<T,VecType> {
-    public abstract static VecType Build(T x, T y, T z, T w);
+public interface IVector4<NumberType,VecType> :IVector4Values<NumberType>, IVector<NumberType, VecType> where NumberType : struct, INumber<NumberType> where VecType: IVector4<NumberType,VecType> {
+    public abstract static VecType Build(NumberType x, NumberType y, NumberType z, NumberType w);
 
-    static int IVector<T,VecType>.Dimension => 4;
+    static int IVector<NumberType,VecType>.Dimension => 4;
 
-    T IVector<T, VecType>.Max() => T.Max(T.Max(X, Y), T.Max(Z,W));
+    NumberType IVector<NumberType, VecType>.Max() => NumberType.Max(NumberType.Max(X, Y), NumberType.Max(Z,W));
 
-    T IVector<T, VecType>.Min() => T.Min(T.Min(X, Y), T.Min(Z,W));
-    VecType IVector<T, VecType>.Normalized() => this / Length();
+    NumberType IVector<NumberType, VecType>.Min() => NumberType.Min(NumberType.Min(X, Y), NumberType.Min(Z,W));
+    VecType IVector<NumberType, VecType>.Normalized() => this / Length();
 
-    T IVector<T, VecType>.LengthSquared() => X * X + Y * Y + Z * Z + W * W;
+    NumberType IVector<NumberType, VecType>.LengthSquared() => X * X + Y * Y + Z * Z + W * W;
 
     public abstract static VecType Zero { get; }
     public abstract static VecType One { get; }
@@ -192,99 +192,99 @@ public interface IVector4<T,VecType> :IVector4Values<T>, IVector<T, VecType> whe
     public abstract static VecType UnitW { get; }
 
     public VecType Add(VecType right) => VecType.Build(X + right.X, Y + right.Y, Z + right.Z, W + right.W);
-    public VecType Add(IVector4<T, VecType> right) => VecType.Build(X + right.X, Y + right.Y, Z + right.Z, W + right.W);
+    public VecType Add(IVector4<NumberType, VecType> right) => VecType.Build(X + right.X, Y + right.Y, Z + right.Z, W + right.W);
 
-    public VecType Add(T scalar) => VecType.Build(X + scalar, Y + scalar, Z + scalar, W + scalar);
+    public VecType Add(NumberType scalar) => VecType.Build(X + scalar, Y + scalar, Z + scalar, W + scalar);
     public VecType Subtract(VecType right) => VecType.Build(X - right.X, Y - right.Y, Z - right.Z, W - right.W);
-    public VecType Subtract(IVector4<T, VecType> right) => VecType.Build(X - right.X, Y - right.Y, Z - right.Z, W - right.W);
-    public VecType Subtract(T scalar) => VecType.Build(X - scalar, Y - scalar, Z - scalar, W - scalar);
+    public VecType Subtract(IVector4<NumberType, VecType> right) => VecType.Build(X - right.X, Y - right.Y, Z - right.Z, W - right.W);
+    public VecType Subtract(NumberType scalar) => VecType.Build(X - scalar, Y - scalar, Z - scalar, W - scalar);
 
     public VecType Multiply(VecType right) => VecType.Build(X * right.X, Y * right.Y, Z * right.Z, W * right.W);
-    public VecType Multiply(IVector4<T, VecType> right) => VecType.Build(X * right.X, Y * right.Y, Z * right.Z, W * right.W);
-    public VecType Multiply(T scalar) => VecType.Build(X * scalar, Y * scalar, Z * scalar, W * scalar);
+    public VecType Multiply(IVector4<NumberType, VecType> right) => VecType.Build(X * right.X, Y * right.Y, Z * right.Z, W * right.W);
+    public VecType Multiply(NumberType scalar) => VecType.Build(X * scalar, Y * scalar, Z * scalar, W * scalar);
 
     public VecType Divide(VecType right) => VecType.Build(X / right.X, Y / right.Y, Z / right.Z, W / right.W);
-    public VecType Divide(IVector4<T, VecType> right) => VecType.Build(X / right.X, Y / right.Y, Z / right.Z, W / right.W);
-    public VecType Divide(T scalar) => VecType.Build(X / scalar, Y / scalar, Z / scalar, W / scalar);
+    public VecType Divide(IVector4<NumberType, VecType> right) => VecType.Build(X / right.X, Y / right.Y, Z / right.Z, W / right.W);
+    public VecType Divide(NumberType scalar) => VecType.Build(X / scalar, Y / scalar, Z / scalar, W / scalar);
 
-    public T Dot(VecType right) => X * right.X + Y * right.Y + Z * right.Z + W * right.W;
+    public NumberType Dot(VecType right) => X * right.X + Y * right.Y + Z * right.Z + W * right.W;
 
-    public static VecType operator +(IVector4<T, VecType> left, IVector4<T, VecType> right) => left.Add(right);
-    public static VecType operator +(VecType left, IVector4<T, VecType> right) => left.Add(right);
-    public static VecType operator +(IVector4<T, VecType> left, T right) => left.Add(right);
-    public static VecType operator +(T right, IVector4<T, VecType> left) => left.Add(right);
+    public static VecType operator +(IVector4<NumberType, VecType> left, IVector4<NumberType, VecType> right) => left.Add(right);
+    public static VecType operator +(VecType left, IVector4<NumberType, VecType> right) => left.Add(right);
+    public static VecType operator +(IVector4<NumberType, VecType> left, NumberType right) => left.Add(right);
+    public static VecType operator +(NumberType right, IVector4<NumberType, VecType> left) => left.Add(right);
 
-    public static VecType operator -(IVector4<T, VecType> left, IVector4<T, VecType> right) => left.Subtract(right);
-    public static VecType operator -(IVector4<T, VecType> left, T right) => left.Subtract(right);
+    public static VecType operator -(IVector4<NumberType, VecType> left, IVector4<NumberType, VecType> right) => left.Subtract(right);
+    public static VecType operator -(IVector4<NumberType, VecType> left, NumberType right) => left.Subtract(right);
 
-    public static VecType operator *(IVector4<T, VecType> left, IVector4<T, VecType> right) => left.Multiply(right);
-    public static VecType operator *(IVector4<T, VecType> left, T scalar) => left.Multiply(scalar);
-    public static VecType operator *(T scalar, IVector4<T, VecType> left) => left.Multiply(scalar);
+    public static VecType operator *(IVector4<NumberType, VecType> left, IVector4<NumberType, VecType> right) => left.Multiply(right);
+    public static VecType operator *(IVector4<NumberType, VecType> left, NumberType scalar) => left.Multiply(scalar);
+    public static VecType operator *(NumberType scalar, IVector4<NumberType, VecType> left) => left.Multiply(scalar);
 
-    public static VecType operator /(IVector4<T, VecType> left, IVector4<T, VecType> right) => left.Divide(right);
-    public static VecType operator /(IVector4<T, VecType> left, T scalar) => left.Divide(scalar);
+    public static VecType operator /(IVector4<NumberType, VecType> left, IVector4<NumberType, VecType> right) => left.Divide(right);
+    public static VecType operator /(IVector4<NumberType, VecType> left, NumberType scalar) => left.Divide(scalar);
 
-    public static VecType operator -(IVector4<T, VecType> vec) => vec.Negate();
+    public static VecType operator -(IVector4<NumberType, VecType> vec) => vec.Negate();
 
-    public VecType Max(IVector4<T, VecType> right) =>
-        VecType.Build(T.Max(X, right.X),
-                      T.Max(Y, right.Y),
-                      T.Max(Z, right.Z),
-                      T.Max(W, right.W));
+    public VecType Max(IVector4<NumberType, VecType> right) =>
+        VecType.Build(NumberType.Max(X, right.X),
+                      NumberType.Max(Y, right.Y),
+                      NumberType.Max(Z, right.Z),
+                      NumberType.Max(W, right.W));
 
     public VecType Max(VecType right) =>
-        VecType.Build(T.Max(X, right.X),
-                      T.Max(Y, right.Y),
-                      T.Max(Z, right.Z),
-                      T.Max(W, right.W));
+        VecType.Build(NumberType.Max(X, right.X),
+                      NumberType.Max(Y, right.Y),
+                      NumberType.Max(Z, right.Z),
+                      NumberType.Max(W, right.W));
 
 
-    public VecType Min(IVector4<T, VecType> right) =>
-        VecType.Build(T.Min(X, right.X),
-                      T.Min(Y, right.Y),
-                      T.Min(Z, right.Z),
-                      T.Min(W, right.W));
+    public VecType Min(IVector4<NumberType, VecType> right) =>
+        VecType.Build(NumberType.Min(X, right.X),
+                      NumberType.Min(Y, right.Y),
+                      NumberType.Min(Z, right.Z),
+                      NumberType.Min(W, right.W));
 
     
 
     public VecType Min(VecType right) =>
-        VecType.Build(T.Min(X, right.X),
-                      T.Min(Y, right.Y),
-                      T.Min(Z, right.Z),
-                      T.Min(W, right.W));
+        VecType.Build(NumberType.Min(X, right.X),
+                      NumberType.Min(Y, right.Y),
+                      NumberType.Min(Z, right.Z),
+                      NumberType.Min(W, right.W));
 
-    public VecType Clamp(IVector4<T, VecType> min, IVector4<T, VecType> max) =>
-        VecType.Build(T.Clamp(X, min.X, max.X),
-                      T.Clamp(Y, min.Y, max.Y),
-                      T.Clamp(Z, min.Z, max.Z),
-                      T.Clamp(W, min.W, max.W));
+    public VecType Clamp(IVector4<NumberType, VecType> min, IVector4<NumberType, VecType> max) =>
+        VecType.Build(NumberType.Clamp(X, min.X, max.X),
+                      NumberType.Clamp(Y, min.Y, max.Y),
+                      NumberType.Clamp(Z, min.Z, max.Z),
+                      NumberType.Clamp(W, min.W, max.W));
 
     public VecType Clamp(VecType min, VecType max) =>
-        VecType.Build(T.Clamp(X, min.X, max.X),
-                      T.Clamp(Y, min.Y, max.Y),
-                      T.Clamp(Z, min.Z, max.Z),
-                      T.Clamp(W, min.W, max.W));
+        VecType.Build(NumberType.Clamp(X, min.X, max.X),
+                      NumberType.Clamp(Y, min.Y, max.Y),
+                      NumberType.Clamp(Z, min.Z, max.Z),
+                      NumberType.Clamp(W, min.W, max.W));
 
-    public VecType Lerp(IVector4<T, VecType> max, T amount) =>
+    public VecType Lerp(IVector4<NumberType, VecType> max, NumberType amount) =>
         VecType.Build(MathUtil.Lerp(X, max.X, amount),
                       MathUtil.Lerp(Y, max.Y, amount),
                       MathUtil.Lerp(Z, max.Z, amount),
                       MathUtil.Lerp(W, max.W, amount));
 
-    public VecType Lerp(VecType max, T amount) =>
+    public VecType Lerp(VecType max, NumberType amount) =>
         VecType.Build(MathUtil.Lerp(X, max.X, amount),
                       MathUtil.Lerp(Y, max.Y, amount),
                       MathUtil.Lerp(Z, max.Z, amount),
                       MathUtil.Lerp(W, max.W, amount));
 
-    public T Distance(VecType right);
+    public NumberType Distance(VecType right);
 
-    public T DistanceSquared(IVector4<T, VecType> right) => Subtract(right).LengthSquared();
-    public T DistanceSquared(VecType right) => Subtract(right).LengthSquared();
+    public NumberType DistanceSquared(IVector4<NumberType, VecType> right) => Subtract(right).LengthSquared();
+    public NumberType DistanceSquared(VecType right) => Subtract(right).LengthSquared();
 
-    public VecType Abs() => VecType.Build(T.Abs(X), T.Abs(Y), T.Abs(Z), T.Abs(W));
+    public VecType Abs() => VecType.Build(NumberType.Abs(X), NumberType.Abs(Y), NumberType.Abs(Z), NumberType.Abs(W));
 
-    public VecType Transform(IMatrix4x4<T> transform) =>
+    public VecType Transform(IMatrix4X4Values<NumberType> transform) =>
         VecType.Build(X * transform.M11 + Y * transform.M21 + Z * transform.M31 + W * transform.M41,
                       X * transform.M12 + Y * transform.M22 + Z * transform.M32 + W * transform.M42,
                       X * transform.M13 + Y * transform.M23 + Z * transform.M33 + W * transform.M43,
@@ -292,7 +292,7 @@ public interface IVector4<T,VecType> :IVector4Values<T>, IVector<T, VecType> whe
 
     public VecType Negate() => VecType.Build(-X, -Y, -Z, -W);
 
-    T[] IVector<T, VecType>.ToArray() => new[] {X, Y, Z, W};
+    NumberType[] IVector<NumberType, VecType>.ToArray() => new[] {X, Y, Z, W};
 
     public TOther ConvertTo<Number, TOther>(TOther v) where Number : struct, INumber<Number>
                                                       where TOther : IVector4<Number, TOther> {
@@ -302,19 +302,6 @@ public interface IVector4<T,VecType> :IVector4Values<T>, IVector<T, VecType> whe
         var w= Number.CreateTruncating(W);
         return TOther.Build(x, y, z, w);
     }
-}
 
-
-public static class VectorExtensions {
-    public static Vector3F ToVector3F<R>(this IVector3<float,R> right) where R : IVector3<float, R> {
-        if (right is not Vector3F r) 
-            r = new Vector3F(right.X, right.Y, right.Z);
-        return r;
-    }
-
-    public static Vector4F ToVector4F<R>(this IVector4<float, R> right) where R : IVector4<float, R> {
-        if (right is not Vector4F vf) 
-            vf = new Vector4F(right);
-        return vf;
-    }
+    public Vector3Type ToXyz<Vector3Type>() where Vector3Type : IVector3<NumberType, Vector3Type>;
 }

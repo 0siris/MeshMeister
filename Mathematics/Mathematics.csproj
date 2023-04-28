@@ -11,4 +11,8 @@
     <Folder Include="Quaternion\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Assertions\Assertions.csproj" />
+  </ItemGroup>
+
 </Project>

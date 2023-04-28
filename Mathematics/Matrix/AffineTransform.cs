@@ -1,17 +1,50 @@
 ﻿using System.Numerics;
+using System.Transactions;
 using Mathematics.Quaternion;
 using Mathematics.Vectors;
 
-namespace Mathematics.Matrix; 
+namespace Mathematics.Matrix;
 
-public struct AffineTransform<T,V,Q> where T: struct, INumber<T> where V : IVector4<T, V> where Q : struct, IQuaternion<T, Q> {
+public struct AffineTransform<T, VecType, QuaternionType, MatrixType> where T : struct, INumber<T>
+                                                                      where VecType : struct, IVector4<T, VecType>
+                                                                      where QuaternionType : struct,
+                                                                      IQuaternion<T, QuaternionType>
+                                                                      where MatrixType : struct,
+                                                                      IMatrix4X4<T, MatrixType, VecType>
+{
     public AffineTransform() { }
 
-    public IVector4<T, V> Scale { get; set; } = V.One;
-    public IQuaternion<T, Q> Rotation { get; set; } = Q.Identity;
-    public IVector4<T, V> Translation { get; set; } = V.Zero;
-    public IVector4<T,V> RotationCenter { get; set; } = V.Zero;
-    public static AffineTransform<T,V,Q> Identity { get; set; }
+    public VecType ScaleVector { get; set; } = VecType.One;
+    public QuaternionType RotationQuaternion { get; set; } = QuaternionType.Identity;
+    public VecType TranslationVec { get; set; } = VecType.Zero;
+    public VecType RotationCenter { get; set; } = VecType.Zero;
 
-    public IMatrix4x4<T> ToMatrix4X4() => IMatrix4x4<T>.Identity;
+    public MatrixType ToSrtMatrix() => Scale * Rotation * Translation;
+    public MatrixType ToSrrtMatrix() => Scale 
+                                        * MatrixType.Translation(-RotationCenter) 
+                                        * Rotation 
+                                        * MatrixType.Translation(RotationCenter) 
+                                        * Translation;
+
+    public MatrixType Scale {
+        get {
+            var m = MatrixType.Identity;
+            m.M11 = ScaleVector.X;
+            m.M22 = ScaleVector.Y;
+            m.M33 = ScaleVector.Z;
+            return m;
+        }
+    }
+
+    public MatrixType Translation {
+        get {
+            var m = MatrixType.Identity;
+            m.M41 = TranslationVec.X;
+            m.M42 = TranslationVec.Y;
+            m.M43 = TranslationVec.Z;
+            return m;
+        }
+    }
+
+    public MatrixType Rotation => MatrixType.Rotation(RotationQuaternion);
 }

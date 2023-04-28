@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Assertions;
 using Mathematics.Matrix;
 
 namespace Mathematics.Vectors;
@@ -11,10 +12,7 @@ public struct Vector3F : IVector3<float,Vector3F> {
     private Vector3F(IVector3Values<float> c) => V = new Vector3(c.X, c.Y, c.Z);
 
     public Vector3F(float x, float y, float z) => V = new Vector3(x, y, z);
-
-
-    public Vector3F TransformCoordinate(IMatrix4x4<float> transform) => throw new NotImplementedException();
-
+    
     public static Vector3F Zero { get; } = new(Vector3.Zero);
 
     public static Vector3F One { get; } = new(Vector3.One);
@@ -130,20 +128,9 @@ public struct Vector3F : IVector3<float,Vector3F> {
 
     public float Distance(Vector3F right) => Vector3.Distance(V, right.V);
     public float DistanceSquared(Vector3F right) => Vector3.DistanceSquared(V, right.V);
-
-    public Vector3F Transform(IMatrix4x4<float> matrix) {
-        if (matrix is not Matrix4x4F m) m = new Matrix4x4F(matrix);
-        return new Vector3F(Vector3.Transform(V, m.Matrix));
-    }
-
-
-    public Vector3F TransformNormal(IMatrix4x4<float> matrix) {
-        if (matrix is not Matrix4x4F m) m = new Matrix4x4F(matrix);
-        return new Vector3F(Vector3.TransformNormal(V, m.Matrix));
-    }
-
+    
     public Vector3F Negate() => new(Vector3.Negate(V));
-
+    
     public Vector3F Unbox() => this;
 
     public static implicit operator Vector3(Vector3F v) => v.V;
@@ -154,6 +141,7 @@ public struct Vector3F : IVector3<float,Vector3F> {
 
     public void Normalize() {
         var l = Length();
+        Numerics.IsZero(l).AssertFalse();
         X /= l;
         Y /= l;
         Z /= l;
